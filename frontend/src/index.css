@@ -1,0 +1,45 @@
+/* Custom styles only - Tailwind is loaded via CDN */
+@keyframes scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-scroll {
+  animation: scroll 20s linear infinite;
+  display: flex;
+  width: fit-content;
+}
+
+.animate-scroll:hover {
+  animation-play-state: paused;
+}
+
+/* Custom utility classes */
+.bg-luxury-plum {
+  background-color: #4c1d6f;
+}
+
+.text-luxury-plum {
+  color: #4c1d6f;
+}
+
+.border-luxury-lavender {
+  border-color: #d8b4fe;
+}
+
+.bg-soft-cream {
+  background-color: #faf9f6;
+}
+
+.hover-luxury-plum:hover {
+  color: #4c1d6f;
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}

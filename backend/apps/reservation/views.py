@@ -3,8 +3,11 @@ from rest_framework.response import Response
 from rest_framework import status
 from apps.booking.models import Booking
 from apps.booking.serializers import BookingSerializer
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
 
 @api_view(['POST'])
+@permission_classes([AllowAny])
 def find_reservation(request):
     """Find a booking by reservation code and email"""
     reservation_code = request.data.get('reservation_code')
@@ -31,6 +34,7 @@ def find_reservation(request):
 
 
 @api_view(['GET'])
+@permission_classes([AllowAny])
 def get_reservation_details(request, code):
     """Get reservation details by code (without email for admin view)"""
     try:

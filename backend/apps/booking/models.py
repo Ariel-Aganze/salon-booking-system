@@ -1,3 +1,6 @@
+# backend/apps/booking/models.py
+# Add this new model to your existing models.py file
+
 from django.db import models
 import uuid
 
@@ -23,7 +26,7 @@ class TimeSlot(models.Model):
         ordering = ['date', 'time']
     
     def __str__(self):
-        return f"{self.date} {self.time} - {'Available' if self.is_available else 'Booked'}"
+        return f"{self.date} {self.time} - {'Available' if self.is_available else 'Booked'}'"
 
 
 class Booking(models.Model):
@@ -56,3 +59,20 @@ class Booking(models.Model):
     
     class Meta:
         ordering = ['-created_at']
+
+
+class BlockedDate(models.Model):
+    """Model to track dates that are blocked for bookings"""
+    date = models.DateField(unique=True)
+    reason = models.CharField(max_length=255, blank=True, null=True)
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        ordering = ['date']
+        verbose_name = "Blocked Date"
+        verbose_name_plural = "Blocked Dates"
+    
+    def __str__(self):
+        return f"{self.date} - {self.reason if self.reason else 'No reason provided'}"

@@ -5,9 +5,12 @@ from django.conf import settings
 from django.shortcuts import get_object_or_404
 from apps.booking.models import Booking
 from services.payment_service import create_checkout_session, create_remaining_payment_session
+from rest_framework.permissions import AllowAny
+from rest_framework.decorators import api_view, permission_classes
 
 
 @api_view(['POST'])
+@permission_classes([AllowAny])
 def create_deposit_session(request):
     """Create Stripe checkout session for deposit"""
     booking_id = request.data.get('booking_id')
@@ -38,6 +41,7 @@ def create_deposit_session(request):
 
 
 @api_view(['POST'])
+@permission_classes([AllowAny])
 def create_remaining_session(request):
     """Create Stripe checkout session for remaining balance"""
     reservation_code = request.data.get('reservation_code')

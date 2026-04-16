@@ -12,18 +12,6 @@ def send_booking_confirmation(booking):
     deposit_amount = total_price * 0.3  # 30% deposit
     remaining_amount = total_price - deposit_amount
     
-    context = {
-        'full_name': booking.full_name,
-        'reservation_code': booking.reservation_code,
-        'service': booking.service.name,
-        'date': booking.date,
-        'time_slot': booking.time_slot,
-        'total_price': total_price,
-        'deposit_paid': deposit_amount,
-        'remaining_balance': remaining_amount,
-        'status': booking.status,
-    }
-    
     # HTML email template
     html_message = f"""
     <!DOCTYPE html>
@@ -45,7 +33,7 @@ def send_booking_confirmation(booking):
     <body>
         <div class="container">
             <div class="header">
-                <h1>Nysha Braiding Salon By Ariel</h1>
+                <h1>Nysha Braiding Salon</h1>
                 <h2>Booking Confirmation</h2>
             </div>
             <div class="content">
@@ -72,8 +60,8 @@ def send_booking_confirmation(booking):
                 <p><strong>Important:</strong> Please arrive 10 minutes before your appointment time.</p>
             </div>
             <div class="footer">
-                <p>Nysha Braiding Salon | 123 Beauty Street | Kigali, Rwanda</p>
-                <p>Phone: +250 788 888 888 | Email: info@astansalon.com</p>
+                <p>Nysha Braiding Salon | 217 South 47th Street, Philadelphia, PA</p>
+                <p>Phone: +1 317 372 7049 | Email: aichetoudiah12@gmail.com</p>
             </div>
         </div>
     </body>
@@ -91,9 +79,9 @@ def send_booking_confirmation(booking):
             html_message=html_message,
             fail_silently=False,
         )
-        print(f"Email sent to {booking.email}")
+        print(f"Booking confirmation email sent to {booking.email}")
     except Exception as e:
-        print(f"Failed to send email: {e}")
+        print(f"Failed to send booking confirmation: {e}")
 
 
 def send_admin_notification(booking):
@@ -103,18 +91,43 @@ def send_admin_notification(booking):
     total_price = float(booking.total_price)
     
     html_message = f"""
+    <!DOCTYPE html>
     <html>
+    <head>
+        <style>
+            body {{ font-family: Arial, sans-serif; }}
+            .container {{ max-width: 600px; margin: 0 auto; padding: 20px; }}
+            .header {{ background-color: #8B4513; color: white; padding: 20px; text-align: center; }}
+            .content {{ padding: 20px; background-color: #f9f9f9; }}
+            .booking-details {{ background-color: white; padding: 15px; margin: 15px 0; border-radius: 5px; }}
+            .footer {{ text-align: center; padding: 20px; font-size: 12px; color: #666; }}
+        </style>
+    </head>
     <body>
-        <h2>New Booking Created!</h2>
-        <p><strong>Reservation Code:</strong> {booking.reservation_code}</p>
-        <p><strong>Customer:</strong> {booking.full_name}</p>
-        <p><strong>Email:</strong> {booking.email}</p>
-        <p><strong>Phone:</strong> {booking.phone}</p>
-        <p><strong>Service:</strong> {booking.service.name}</p>
-        <p><strong>Date:</strong> {booking.date} at {booking.time_slot}</p>
-        <p><strong>Total Price:</strong> ${total_price:.2f}</p>
-        <p><strong>Status:</strong> {booking.status}</p>
-        <p><a href="http://localhost:8000/admin/dashboard">Go to Admin Dashboard</a></p>
+        <div class="container">
+            <div class="header">
+                <h1>Nysha Braiding Salon</h1>
+                <h2>New Booking Created!</h2>
+            </div>
+            <div class="content">
+                <div class="booking-details">
+                    <h3>Booking Details:</h3>
+                    <p><strong>Reservation Code:</strong> {booking.reservation_code}</p>
+                    <p><strong>Customer:</strong> {booking.full_name}</p>
+                    <p><strong>Email:</strong> {booking.email}</p>
+                    <p><strong>Phone:</strong> {booking.phone}</p>
+                    <p><strong>Service:</strong> {booking.service.name}</p>
+                    <p><strong>Date:</strong> {booking.date} at {booking.time_slot}</p>
+                    <p><strong>Total Price:</strong> ${total_price:.2f}</p>
+                    <p><strong>Status:</strong> {booking.status}</p>
+                </div>
+                <p><a href="http://localhost:5174/admin/dashboard">Go to Admin Dashboard</a></p>
+            </div>
+            <div class="footer">
+                <p>Nysha Braiding Salon | 217 South 47th Street, Philadelphia, PA</p>
+                <p>Phone: +1 317 372 7049 | Email: aichetoudiah12@gmail.com</p>
+            </div>
+        </div>
     </body>
     </html>
     """
@@ -126,7 +139,7 @@ def send_admin_notification(booking):
             subject=subject,
             message=plain_message,
             from_email=settings.EMAIL_HOST_USER,
-            recipient_list=['admin@astansalon.com'],  # Change to your admin email
+            recipient_list=['admin@nyshabraiding.com'],
             html_message=html_message,
             fail_silently=False,
         )
@@ -143,33 +156,99 @@ def send_payment_confirmation(booking, payment_type="deposit"):
     
     if payment_type == "deposit":
         subject = f"Deposit Payment Confirmed - {booking.reservation_code}"
-        message = f"""
-        Dear {booking.full_name},
-        
-        Your deposit of ${amount_paid:.2f} has been received.
-        
-        Remaining balance: ${remaining:.2f}
-        Please pay the remaining amount before your appointment.
-        
-        Thank you for choosing Nysha Braiding Salon!
+        html_message = f"""
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <style>
+                body {{ font-family: Arial, sans-serif; }}
+                .container {{ max-width: 600px; margin: 0 auto; padding: 20px; }}
+                .header {{ background-color: #17a2b8; color: white; padding: 20px; text-align: center; }}
+                .content {{ padding: 20px; background-color: #f9f9f9; }}
+                .booking-details {{ background-color: white; padding: 15px; margin: 15px 0; border-radius: 5px; }}
+                .footer {{ text-align: center; padding: 20px; font-size: 12px; color: #666; }}
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <div class="header">
+                    <h1>Nysha Braiding Salon</h1>
+                    <h2>Deposit Payment Confirmed</h2>
+                </div>
+                <div class="content">
+                    <h3>Dear {booking.full_name},</h3>
+                    <p>Your deposit payment has been received.</p>
+                    
+                    <div class="booking-details">
+                        <h3>Payment Details:</h3>
+                        <p><strong>Reservation Code:</strong> {booking.reservation_code}</p>
+                        <p><strong>Deposit Paid:</strong> ${amount_paid:.2f}</p>
+                        <p><strong>Remaining Balance:</strong> ${remaining:.2f}</p>
+                    </div>
+                    
+                    <p>Please pay the remaining amount before your appointment.</p>
+                    <p>Thank you for choosing Nysha Braiding Salon!</p>
+                </div>
+                <div class="footer">
+                    <p>Nysha Braiding Salon | 217 South 47th Street, Philadelphia, PA</p>
+                    <p>Phone: +1 317 372 7049 | Email: aichetoudiah12@gmail.com</p>
+                </div>
+            </div>
+        </body>
+        </html>
         """
     else:
         subject = f"Full Payment Confirmed - {booking.reservation_code}"
-        message = f"""
-        Dear {booking.full_name},
-        
-        Your full payment of ${amount_paid:.2f} has been received.
-        Your booking is now fully confirmed.
-        
-        Thank you for choosing Nysha Braiding Salon!
+        html_message = f"""
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <style>
+                body {{ font-family: Arial, sans-serif; }}
+                .container {{ max-width: 600px; margin: 0 auto; padding: 20px; }}
+                .header {{ background-color: #28a745; color: white; padding: 20px; text-align: center; }}
+                .content {{ padding: 20px; background-color: #f9f9f9; }}
+                .booking-details {{ background-color: white; padding: 15px; margin: 15px 0; border-radius: 5px; }}
+                .footer {{ text-align: center; padding: 20px; font-size: 12px; color: #666; }}
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <div class="header">
+                    <h1>Nysha Braiding Salon</h1>
+                    <h2>Full Payment Confirmed</h2>
+                </div>
+                <div class="content">
+                    <h3>Dear {booking.full_name},</h3>
+                    <p>Your full payment has been received.</p>
+                    
+                    <div class="booking-details">
+                        <h3>Payment Details:</h3>
+                        <p><strong>Reservation Code:</strong> {booking.reservation_code}</p>
+                        <p><strong>Amount Paid:</strong> ${amount_paid:.2f}</p>
+                    </div>
+                    
+                    <p>Your booking is now fully confirmed.</p>
+                    <p>Thank you for choosing Nysha Braiding Salon!</p>
+                </div>
+                <div class="footer">
+                    <p>Nysha Braiding Salon | 217 South 47th Street, Philadelphia, PA</p>
+                    <p>Phone: +1 317 372 7049 | Email: aichetoudiah12@gmail.com</p>
+                </div>
+            </div>
+        </body>
+        </html>
         """
+    
+    plain_message = strip_tags(html_message)
     
     try:
         send_mail(
             subject=subject,
-            message=message,
+            message=plain_message,
             from_email=settings.EMAIL_HOST_USER,
             recipient_list=[booking.email],
+            html_message=html_message,
             fail_silently=False,
         )
         print(f"Payment confirmation email sent to {booking.email}")
@@ -177,42 +256,210 @@ def send_payment_confirmation(booking, payment_type="deposit"):
         print(f"Failed to send payment email: {e}")
 
 
-def send_booking_update(booking, update_type="cancelled"):
+def send_booking_update(booking, update_type="cancelled", old_date=None, old_time=None):
     """Send notification when booking is updated by admin"""
+    if not booking.email:
+        return
+    
     if update_type == "cancelled":
         subject = f"Booking Cancelled - {booking.reservation_code}"
-        message = f"""
-        Dear {booking.full_name},
-        
-        Your booking for {booking.service.name} on {booking.date} at {booking.time_slot} has been CANCELLED.
-        
-        If you have any questions, please contact us.
-        """
-    elif update_type == "rescheduled":
-        new_date = booking.date
-        new_time = booking.time_slot
-        subject = f"Booking Rescheduled - {booking.reservation_code}"
-        message = f"""
-        Dear {booking.full_name},
-        
-        Your booking has been RESCHEDULED to {new_date} at {new_time}.
-        
-        Please contact us if this doesn't work for you.
-        """
-    else:
-        subject = f"Booking Confirmed - {booking.reservation_code}"
-        message = f"""
-        Dear {booking.full_name},
-        
-        Your booking for {booking.service.name} on {booking.date} at {booking.time_slot} has been CONFIRMED.
-        
-        We look forward to seeing you!
+        html_message = f"""
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <style>
+                body {{ font-family: Arial, sans-serif; }}
+                .container {{ max-width: 600px; margin: 0 auto; padding: 20px; }}
+                .header {{ background-color: #dc2626; color: white; padding: 20px; text-align: center; }}
+                .content {{ padding: 20px; background-color: #f9f9f9; }}
+                .booking-details {{ background-color: white; padding: 15px; margin: 15px 0; border-radius: 5px; }}
+                .footer {{ text-align: center; padding: 20px; font-size: 12px; color: #666; }}
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <div class="header">
+                    <h1>Nysha Braiding Salon</h1>
+                    <h2>Booking Cancelled</h2>
+                </div>
+                <div class="content">
+                    <h3>Dear {booking.full_name},</h3>
+                    <p>Your booking has been <strong>CANCELLED</strong>.</p>
+                    
+                    <div class="booking-details">
+                        <h3>Cancelled Booking Details:</h3>
+                        <p><strong>Reservation Code:</strong> {booking.reservation_code}</p>
+                        <p><strong>Service:</strong> {booking.service.name}</p>
+                        <p><strong>Original Date:</strong> {booking.date}</p>
+                        <p><strong>Original Time:</strong> {booking.time_slot}</p>
+                    </div>
+                    
+                    <p>If you have any questions, please contact us.</p>
+                </div>
+                <div class="footer">
+                    <p>Nysha Braiding Salon | 217 South 47th Street, Philadelphia, PA</p>
+                    <p>Phone: +1 317 372 7049 | Email: aichetoudiah12@gmail.com</p>
+                </div>
+            </div>
+        </body>
+        </html>
         """
     
-    send_mail(
-        subject=subject,
-        message=message,
-        from_email=settings.EMAIL_HOST_USER,
-        recipient_list=[booking.email],
-        fail_silently=False,
-    )
+    elif update_type == "rescheduled":
+        subject = f"Booking Rescheduled - {booking.reservation_code}"
+        html_message = f"""
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <style>
+                body {{ font-family: Arial, sans-serif; }}
+                .container {{ max-width: 600px; margin: 0 auto; padding: 20px; }}
+                .header {{ background-color: #3b82f6; color: white; padding: 20px; text-align: center; }}
+                .content {{ padding: 20px; background-color: #f9f9f9; }}
+                .old-details {{ background-color: #fee2e2; padding: 15px; margin: 10px 0; border-radius: 5px; border-left: 4px solid #dc2626; }}
+                .new-details {{ background-color: #dcfce7; padding: 15px; margin: 10px 0; border-radius: 5px; border-left: 4px solid #22c55e; }}
+                .footer {{ text-align: center; padding: 20px; font-size: 12px; color: #666; }}
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <div class="header">
+                    <h1>Nysha Braiding Salon</h1>
+                    <h2>Booking Rescheduled</h2>
+                </div>
+                <div class="content">
+                    <h3>Dear {booking.full_name},</h3>
+                    <p>Your booking has been <strong>RESCHEDULED</strong>.</p>
+                    
+                    <div class="old-details">
+                        <h4>Original Appointment:</h4>
+                        <p><strong>Date:</strong> {old_date}</p>
+                        <p><strong>Time:</strong> {old_time}</p>
+                    </div>
+                    
+                    <div class="new-details">
+                        <h4>New Appointment:</h4>
+                        <p><strong>Date:</strong> {booking.date}</p>
+                        <p><strong>Time:</strong> {booking.time_slot}</p>
+                    </div>
+                    
+                    <div class="booking-details" style="background: white; padding: 15px; margin: 15px 0; border-radius: 5px;">
+                        <p><strong>Reservation Code:</strong> {booking.reservation_code}</p>
+                        <p><strong>Service:</strong> {booking.service.name}</p>
+                    </div>
+                    
+                    <p>Please contact us if this doesn't work for you.</p>
+                </div>
+                <div class="footer">
+                    <p>Nysha Braiding Salon | 217 South 47th Street, Philadelphia, PA</p>
+                    <p>Phone: +1 317 372 7049 | Email: aichetoudiah12@gmail.com</p>
+                </div>
+            </div>
+        </body>
+        </html>
+        """
+    
+    else:
+        subject = f"Booking Confirmed - {booking.reservation_code}"
+        html_message = f"""
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <style>
+                body {{ font-family: Arial, sans-serif; }}
+                .container {{ max-width: 600px; margin: 0 auto; padding: 20px; }}
+                .header {{ background-color: #22c55e; color: white; padding: 20px; text-align: center; }}
+                .content {{ padding: 20px; background-color: #f9f9f9; }}
+                .booking-details {{ background-color: white; padding: 15px; margin: 15px 0; border-radius: 5px; }}
+                .footer {{ text-align: center; padding: 20px; font-size: 12px; color: #666; }}
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <div class="header">
+                    <h1>Nysha Braiding Salon</h1>
+                    <h2>Booking Confirmed</h2>
+                </div>
+                <div class="content">
+                    <h3>Dear {booking.full_name},</h3>
+                    <p>Your booking has been <strong>CONFIRMED</strong>.</p>
+                    
+                    <div class="booking-details">
+                        <h3>Booking Details:</h3>
+                        <p><strong>Reservation Code:</strong> {booking.reservation_code}</p>
+                        <p><strong>Service:</strong> {booking.service.name}</p>
+                        <p><strong>Date:</strong> {booking.date}</p>
+                        <p><strong>Time:</strong> {booking.time_slot}</p>
+                    </div>
+                    
+                    <p>We look forward to seeing you!</p>
+                </div>
+                <div class="footer">
+                    <p>Nysha Braiding Salon | 217 South 47th Street, Philadelphia, PA</p>
+                    <p>Phone: +1 317 372 7049 | Email: aichetoudiah12@gmail.com</p>
+                </div>
+            </div>
+        </body>
+        </html>
+        """
+    
+    plain_message = strip_tags(html_message)
+    
+    try:
+        send_mail(
+            subject=subject,
+            message=plain_message,
+            from_email=settings.EMAIL_HOST_USER,
+            recipient_list=[booking.email],
+            html_message=html_message,
+            fail_silently=False,
+        )
+        print(f"Booking update email sent to {booking.email}")
+        return True
+    except Exception as e:
+        print(f"Failed to send booking update email: {str(e)}")
+        return False
+
+
+# ============================================
+# SAFE WRAPPER FUNCTIONS FOR SMS INTEGRATION
+# ============================================
+
+def send_booking_confirmation_safe(booking):
+    """Safe wrapper for send_booking_confirmation that logs errors"""
+    try:
+        send_booking_confirmation(booking)
+        return True
+    except Exception as e:
+        print(f"Failed to send booking confirmation email: {e}")
+        return False
+
+
+def send_admin_notification_safe(booking):
+    """Safe wrapper for send_admin_notification that logs errors"""
+    try:
+        send_admin_notification(booking)
+        return True
+    except Exception as e:
+        print(f"Failed to send admin notification email: {e}")
+        return False
+
+
+def send_payment_confirmation_safe(booking, payment_type="deposit"):
+    """Safe wrapper for send_payment_confirmation that logs errors"""
+    try:
+        send_payment_confirmation(booking, payment_type)
+        return True
+    except Exception as e:
+        print(f"Failed to send payment confirmation email: {e}")
+        return False
+
+
+def send_booking_update_safe(booking, update_type="cancelled", old_date=None, old_time=None):
+    """Safe wrapper for send_booking_update that logs errors"""
+    try:
+        send_booking_update(booking, update_type, old_date, old_time)
+        return True
+    except Exception as e:
+        print(f"Failed to send booking update email: {e}")
+        return False

@@ -6,6 +6,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from apps.booking.models import Booking
 from services.email_service import send_payment_confirmation, send_booking_confirmation, send_admin_notification
+from services.notification_service import notify_customer
 from utils.code_generator import generate_reservation_code
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
@@ -78,6 +79,12 @@ def handle_checkout_completed(session):
         except Exception as e:
             print(f"Email error: {e}")
         
+        # Send SMS notification for deposit payment
+        try:
+            notify_customer(booking, 'payment_success', {'payment_type': 'deposit', 'amount': amount_paid})
+        except Exception as e:
+            print(f"SMS notification error: {e}")
+        
     elif payment_type == 'remaining':
         booking.amount_paid = amount_paid
         booking.status = 'paid'
@@ -87,6 +94,12 @@ def handle_checkout_completed(session):
             send_payment_confirmation(booking, "full")
         except Exception as e:
             print(f"Email error: {e}")
+        
+        # Send SMS notification for remaining payment
+        try:
+            notify_customer(booking, 'payment_remaining_success', {'amount': amount_paid})
+        except Exception as e:
+            print(f"SMS notification error: {e}")
 
 
 def handle_payment_intent_succeeded(payment_intent):
@@ -132,6 +145,12 @@ def handle_payment_intent_succeeded(payment_intent):
             send_payment_confirmation(booking, "deposit")
         except Exception as e:
             print(f"Email error: {e}")
+        
+        # Send SMS notification for deposit payment (fallback)
+        try:
+            notify_customer(booking, 'payment_success', {'payment_type': 'deposit', 'amount': amount_paid})
+        except Exception as e:
+            print(f"SMS notification error: {e}")
 
 
 def handle_checkout_expired(session):

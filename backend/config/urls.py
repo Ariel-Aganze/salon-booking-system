@@ -20,4 +20,6 @@ urlpatterns = [
     path('api/reservations/', include('apps.reservation.urls')),
     path('api/admin/', include('apps.adminpanel.urls')),
     path('api/webhooks/', include('webhooks.urls')),
+    # Add to urlpatterns
+    # path('api/chatbot/', include('apps.chatbot.urls')),
 ]

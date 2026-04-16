@@ -9,4 +9,5 @@ urlpatterns = [
     path('services/', views.manage_services, name='services'),
     path('calendar/', views.get_calendar_view, name='calendar'),
     path('me/', views.get_current_user, name='current-user'),
+    path('deposit-settings/', views.deposit_settings, name='deposit-settings'),
 ]
