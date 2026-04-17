@@ -1,0 +1,61 @@
+services:
+  # Backend API Service
+  - type: web
+    name: nysha-backend
+    runtime: python
+    repo: https://github.com/Ariel-Aganze/salon-booking-system
+    plan: free
+    rootDir: backend
+    buildCommand: "./build.sh"
+    startCommand: "gunicorn config.wsgi:application --bind 0.0.0.0:$PORT"
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: nysha-db
+          property: connectionString
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: "False"
+      - key: ALLOWED_HOSTS
+        value: "nysha-backend.onrender.com,localhost,127.0.0.1"
+      - key: CORS_ALLOWED_ORIGINS
+        value: "https://nysha-frontend.onrender.com,http://localhost:5173"
+      - key: STRIPE_SECRET_KEY
+        sync: false
+      - key: STRIPE_PUBLISHABLE_KEY
+        sync: false
+      - key: STRIPE_WEBHOOK_SECRET
+        sync: false
+      - key: EMAIL_HOST
+        sync: false
+      - key: EMAIL_HOST_USER
+        sync: false
+      - key: EMAIL_HOST_PASSWORD
+        sync: false
+      - key: TWILIO_ACCOUNT_SID
+        sync: false
+      - key: TWILIO_AUTH_TOKEN
+        sync: false
+      - key: TWILIO_MESSAGING_SERVICE_SID
+        sync: false
+
+  # Frontend Static Site
+  - type: static
+    name: nysha-frontend
+    repo: https://github.com/Ariel-Aganze/salon-booking-system
+    plan: free
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    publishPath: dist
+    envVars:
+      - key: VITE_API_URL
+        value: "https://nysha-backend.onrender.com/api"
+      - key: VITE_STRIPE_PUBLIC_KEY
+        sync: false
+
+databases:
+  - name: nysha-db
+    plan: free
+    databaseName: nysha_db
+    user: nysha_user
